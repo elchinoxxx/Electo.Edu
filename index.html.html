@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de Democracia y Educación Electoral en México</title>
+    
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        /* Animaciones base */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Acordeones en Modales */
+        .accordion-content {
+            transition: max-height 0.4s ease-in-out, padding 0.4s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .accordion-button.active .icon-chevron {
+            transform: rotate(180deg);
+            color: #0ea5e9;
+        }
+
+        /* Nav Glassmorphism */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Animaciones flotantes */
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Modales (Sub-menús internos) */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 90vh;
+        }
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+        body.modal-open { overflow: hidden; padding-right: 15px; }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .dark-scrollbar::-webkit-scrollbar { width: 8px; }
+        .dark-scrollbar::-webkit-scrollbar-track { background: #0f172a; border-radius: 4px; }
+        .dark-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body class="font-sans text-slate-700 bg-slate-50 antialiased selection:bg-brand-500 selection:text-white relative">
+
+    <!-- Navegación -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300 shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-10 h-10 bg-brand-600 text-white rounded-lg flex items-center justify-center text-xl shadow-lg">
+                        <i class="fa-solid fa-landmark-dome"></i>
+                    </div>
+                    <span class="font-heading font-bold text-xl text-slate-900 hidden sm:block">EduElectoral MX</span>
+                </div>
+                
+                <div class="hidden lg:flex space-x-6 items-center">
+                    <a href="#proyecto" class="text-slate-600 hover:text-brand-600 font-medium text-sm transition-colors">El Proyecto</a>
+                    <a href="#perfiles" class="text-slate-600 hover:text-brand-600 font-medium text-sm transition-colors">Perfiles y Objetivos</a>
+                    <a href="#metodologia" class="text-slate-600 hover:text-brand-600 font-medium text-sm transition-colors">Implementación</a>
+                    <!-- Botones que abren Sub-menús (Modales) sin redirigir -->
+                    <button onclick="openModal('modal-programa')" class="text-slate-600 hover:text-brand-600 font-medium text-sm transition-colors focus:outline-none">
+                        <i class="fa-solid fa-list mr-1"></i> Temario
+                    </button>
+                    <button onclick="openModal('modal-conocer')" class="text-slate-600 hover:text-brand-600 font-medium text-sm transition-colors focus:outline-none">
+                        <i class="fa-solid fa-star mr-1"></i> Servicios Especiales
+                    </button>
+                    
+                    <a href="#docente" class="ml-4 px-5 py-2.5 bg-brand-600 text-white rounded-full font-medium text-sm hover:bg-brand-700 transition-colors shadow-md">Contactar Docente</a>
+                </div>
+
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-brand-600 focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-slate-100 shadow-xl absolute w-full">
+            <div class="px-4 pt-2 pb-6 space-y-2 flex flex-col">
+                <a href="#proyecto" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:text-brand-600">El Proyecto</a>
+                <a href="#metodologia" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-slate-700 hover:text-brand-600">Implementación</a>
+                <button onclick="openModal('modal-programa'); document.getElementById('mobile-menu').classList.add('hidden');" class="text-left w-full block px-3 py-3 rounded-md text-base font-medium text-brand-600 bg-brand-50">Abrir Temario Completo</button>
+                <button onclick="openModal('modal-conocer'); document.getElementById('mobile-menu').classList.add('hidden');" class="text-left w-full block px-3 py-3 rounded-md text-base font-medium text-brand-600 bg-brand-50 mt-2">Opciones de Inversión</button>
+                <a href="#docente" class="mobile-link block px-3 py-3 rounded-md text-base font-bold text-slate-900 bg-slate-100 mt-2">Contactar al Docente</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="inicio" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-900 text-white">
+        <!-- Imagen de fondo -->
+        <div class="absolute inset-0 z-0 opacity-30">
+            <img src="https://images.unsplash.com/photo-1541872703-74c5e44368f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Institución Gubernamental" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-slate-900/80"></div>
+        </div>
+        <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-brand-600 blur-[100px] opacity-40 z-0"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" id="hero-text">
+            <span class="inline-block py-1 px-4 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold tracking-widest uppercase mb-6 border border-brand-500/30">
+                PROYECTO ACADÉMICO EN MATERIA ELECTORAL
+            </span>
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-heading font-extrabold tracking-tight leading-tight">
+                    Curso de <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-blue-200">Democracia y Educación</span><br>Electoral en México
+                </h1>
+                <button type="button" onclick="readSection('hero-text', this)" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none" title="Escuchar texto" aria-label="Leer título">
+                    <i class="fa-solid fa-volume-high tts-icon text-xl"></i>
+                </button>
+            </div>
+            <p class="mt-4 max-w-2xl text-lg sm:text-xl text-slate-300 mx-auto mb-10 font-light">
+                Un taller formativo teórico-práctico diseñado para fortalecer la cultura cívica y consolidar los valores democráticos institucionales.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button type="button" onclick="openModal('modal-programa')" class="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold transition-all shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2 focus:outline-none">
+                    <i class="fa-solid fa-list-check"></i> Ver Programa Académico
+                </button>
+                <button type="button" onclick="openModal('modal-conocer')" class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2 focus:outline-none">
+                    <i class="fa-solid fa-scale-balanced text-brand-400"></i> Opciones a la Medida
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- I. DATOS GENERALES DEL PROYECTO -->
+    <section class="relative -mt-12 z-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl p-6 lg:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 border border-slate-100 reveal relative" id="datos-generales-text">
+            <!-- Botón de lectura para esta sección -->
+            <button type="button" onclick="readSection('datos-generales-text', this)" class="absolute -top-4 -right-4 w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center hover:bg-brand-600 transition-colors shadow-lg focus:outline-none z-10" title="Escuchar Datos Generales">
+                <i class="fa-solid fa-volume-high tts-icon"></i>
+            </button>
+
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 shrink-0">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Población Objetivo</h4>
+                    <p class="font-bold text-slate-900 leading-tight">Estudiantes de secundaria, preparatoria y/o licenciatura.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 shrink-0">
+                    <i class="fa-solid fa-clock text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Modalidad y Duración</h4>
+                    <p class="font-bold text-slate-900 leading-tight">Presencial, Teórico-Práctica (3 hrs/semana)</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 shrink-0">
+                    <i class="fa-solid fa-book-open text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Área Académica</h4>
+                    <p class="font-bold text-slate-900 leading-tight">Formación Cívica / Sociales / Derecho</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 shrink-0">
+                    <i class="fa-solid fa-chalkboard-user text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Docente Responsable</h4>
+                    <p class="font-bold text-slate-900 leading-tight">Bulmaro García Arcos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Estadísticas Destacadas -->
+    <section class="py-12 bg-slate-50 border-b border-slate-200 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center reveal" id="stats-text">
+                <button type="button" onclick="readSection('stats-text', this)" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-200 text-brand-600 flex items-center justify-center hover:bg-slate-300 transition-colors focus:outline-none" title="Escuchar Estadísticas">
+                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                </button>
+
+                <div>
+                    <div class="text-5xl font-heading font-extrabold text-brand-600 mb-2 tracking-tighter"><span class="counter" data-target="8">0</span></div>
+                    <h4 class="text-lg font-bold text-slate-900">Módulos Específicos</h4>
+                    <p class="text-slate-500 text-sm mt-1">Desde democracia hasta medios de impugnación.</p>
+                </div>
+                <div class="border-t md:border-t-0 md:border-l border-slate-200 pt-6 md:pt-0">
+                    <div class="text-5xl font-heading font-extrabold text-brand-600 mb-2 tracking-tighter"><span class="counter" data-target="100">0</span>%</div>
+                    <h4 class="text-lg font-bold text-slate-900">Aplicación Práctica</h4>
+                    <p class="text-slate-500 text-sm mt-1">Simulación íntegra de elección escolar y casos.</p>
+                </div>
+                <div class="border-t md:border-t-0 md:border-l border-slate-200 pt-6 md:pt-0">
+                    <div class="text-5xl font-heading font-extrabold text-brand-600 mb-2 tracking-tighter">+<span class="counter" data-target="15">0</span></div>
+                    <h4 class="text-lg font-bold text-slate-900">Competencias</h4>
+                    <p class="text-slate-500 text-sm mt-1">Desarrollo de análisis institucional y cívico.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- II. DIAGNÓSTICO y III. JUSTIFICACIÓN -->
+    <section id="proyecto" class="py-24 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-16">
+                <!-- Diagnóstico -->
+                <div class="reveal" id="diagnostico-text">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-sm font-bold tracking-widest text-brand-600 uppercase"><i class="fa-solid fa-magnifying-glass mr-2"></i> II. Diagnóstico</h2>
+                        <button type="button" onclick="readSection('diagnostico-text', this)" class="w-8 h-8 rounded-full bg-slate-100 text-brand-600 flex items-center justify-center hover:bg-slate-200 transition-colors focus:outline-none" title="Escuchar texto">
+                            <i class="fa-solid fa-volume-high tts-icon"></i>
+                        </button>
+                    </div>
+                    <h3 class="text-3xl font-heading font-bold text-slate-900 mb-6">El reto de la participación juvenil</h3>
+                    <div class="space-y-4 text-lg text-slate-600">
+                        <p>En el contexto actual se identifica <strong>baja participación de las juventudes en los asuntos públicos</strong>, sobre todo en cuestiones electorales.</p>
+                        <p>La falta de educación electoral en los planes de estudio y por ende un conocimiento insuficiente sobre el funcionamiento del sistema electoral mexicano.</p>
+                        <p>Esta situación refuerza la necesidad de la formación democrática temprana para los estudiantes pues dicha formación les brindará las bases para formar no solo el aspecto académico sino, el de <strong>toma de decisiones conscientes</strong>. Lo cual puede llegar a impactar, la participación democrática y la comprensión del Estado de Derecho.</p>
+                        <p class="bg-brand-50 p-4 border-l-4 border-brand-600 rounded-r-lg text-brand-900 font-medium text-base">4.- Los niveles secundaria, medio superior y superior representan etapas estratégicas para fortalecer la cultura cívica, consolidar valores democráticos y fomentar el respeto por las instituciones.</p>
+                    </div>
+                </div>
+                <!-- Imagen -->
+                <div class="relative reveal hidden lg:block h-full min-h-[400px]">
+                    <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Jóvenes estudiantes" class="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl">
+                </div>
+            </div>
+
+            <!-- Justificación y Marco Normativo -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div class="reveal order-2 lg:order-1 relative h-[400px]">
+                    <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Libros de derecho" class="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl">
+                </div>
+                <div class="reveal order-1 lg:order-2" id="justificacion-text">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="text-sm font-bold tracking-widest text-brand-600 uppercase"><i class="fa-solid fa-scale-balanced mr-2"></i> III. Justificación y IV. Normativa</h2>
+                        <button type="button" onclick="readSection('justificacion-text', this)" class="w-8 h-8 rounded-full bg-slate-100 text-brand-600 flex items-center justify-center hover:bg-slate-200 transition-colors focus:outline-none" title="Escuchar texto">
+                            <i class="fa-solid fa-volume-high tts-icon"></i>
+                        </button>
+                    </div>
+                    <h3 class="text-3xl font-heading font-bold text-slate-900 mb-6">Fundamento Estructural</h3>
+                    <p class="text-slate-600 mb-4">La Constitución establece que México es una República democrática, representativa y federal. Asimismo, dispone que la función electoral es una función estatal regida por principios constitucionales específicos.</p>
+                    <p class="text-slate-600 mb-6">La educación en materia electoral no sólo es formativa, sino <strong>estructural para la preservación del orden democrático</strong>. Comprender cómo se organizan las elecciones, su regulación, las autoridades que actúan como árbitros; cómo se eligen las autoridades y como se resuelven los conflictos fortalece la cultura de legalidad y la convivencia pacífica.</p>
+                    
+                    <div class="bg-slate-900 text-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-brand-400 mb-3 border-b border-slate-700 pb-2">CONSTITUCIÓN POLÍTICA (CPEUM)</h4>
+                        <ul class="text-sm space-y-2 mb-4 text-slate-300">
+                            <li><strong class="text-white">Artículo 40:</strong> Forma de gobierno democrática.</li>
+                            <li><strong class="text-white">Artículo 41:</strong> Sistema electoral y principios rectores.</li>
+                            <li><strong class="text-white">Artículo 99:</strong> Sistema de justicia electoral.</li>
+                            <li><strong class="text-white">Artículo 116:</strong> Elecciones en el ámbito local.</li>
+                        </ul>
+                        <h4 class="font-bold text-brand-400 mb-3 border-b border-slate-700 pb-2">LEGISLACIÓN SECUNDARIA</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Ley General de Instituciones y procedimientos electorales.<br>
+                            Ley General del Sistema de Medios de Impugnación en Materia Electoral.<br>
+                            Ley general de Partidos Políticos.<br>
+                            <span class="italic text-slate-500 block mt-2">Estos ordenamientos establecen los principios de legalidad, certeza, independencia, imparcialidad, objetividad y máxima publicidad.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- V. OBJETIVOS y VI. OBJETIVOS ESPECÍFICOS -->
+    <section class="py-20 bg-brand-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" id="objetivos-text">
+            
+            <div class="flex justify-end mb-4">
+                <button type="button" onclick="readSection('objetivos-text', this)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none" title="Escuchar Objetivos">
+                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                </button>
+            </div>
+
+            <div class="text-center max-w-4xl mx-auto mb-16 reveal">
+                <h2 class="text-sm font-bold tracking-widest text-brand-400 uppercase mb-3">V. Objetivo General</h2>
+                <p class="text-2xl md:text-3xl font-heading font-bold leading-tight">
+                    "Desarrollar en el alumnado una comprensión integral del sistema electoral mexicano, sus fundamentos constitucionales, las etapas del proceso electoral y los mecanismos de defensa de los derechos político- electorales."
+                </p>
+            </div>
+
+            <h2 class="text-center text-sm font-bold tracking-widest text-brand-400 uppercase mb-8 reveal">VI. Objetivos Específicos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 reveal">
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">01.</span>Analizar el concepto de democracia (formal y sustantiva).</div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">02.</span>Identificar los principios del sistema electoral.</div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">03.</span>Explicar la división de poderes y niveles de gobierno.</div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">04.</span>Analizar la estructura y funciones de las autoridades electorales.</div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">05.</span>Comprender las etapas del proceso electoral.</div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">06.</span>Reconocer las características del voto.</div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">07.</span>Identificar conductas constitutivas de delitos electorales.</div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700"><span class="text-brand-500 font-bold block mb-2 text-xl">08.</span>Conocer la finalidad del sistema de medios de impugnación.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VII. PERFILES Y COMPETENCIAS -->
+    <section id="perfiles" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="perfiles-text">
+            
+            <div class="flex items-center justify-center gap-4 mb-16 reveal">
+                <div class="text-center">
+                    <h2 class="text-3xl md:text-4xl font-heading font-bold text-slate-900 mb-2">Perfiles y Competencias</h2>
+                    <p class="text-slate-600 text-lg">Habilidades a desarrollar antes y después del taller formativo.</p>
+                </div>
+                <button type="button" onclick="readSection('perfiles-text', this)" class="w-10 h-10 rounded-full bg-slate-200 text-brand-600 flex items-center justify-center hover:bg-slate-300 transition-colors focus:outline-none" title="Escuchar Perfiles">
+                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                </button>
+            </div>
+
+            <!-- Ingreso y Egreso -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 reveal">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border-t-4 border-brand-500 hover:shadow-xl transition-shadow">
+                    <h3 class="text-xl font-heading font-bold text-slate-900 mb-4 flex items-center gap-3"><i class="fa-solid fa-door-open text-brand-500"></i> VII. Perfil de Ingreso</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3 text-slate-700"><i class="fa-solid fa-check text-brand-500 mt-1"></i> Conocimientos básicos de Formación Cívica.</li>
+                        <li class="flex items-start gap-3 text-slate-700"><i class="fa-solid fa-check text-brand-500 mt-1"></i> Interés por temas sociales y democráticos.</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-900 p-8 rounded-2xl shadow-lg border-t-4 border-brand-400 hover:shadow-xl transition-shadow">
+                    <h3 class="text-xl font-heading font-bold text-white mb-4 flex items-center gap-3"><i class="fa-solid fa-graduation-cap text-brand-400"></i> VII. Perfil de Egreso</h3>
+                    <p class="text-sm text-slate-400 mb-3">Al concluir el curso, el estudiante será capaz de:</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-arrow-right text-brand-400 mt-1"></i> Explicar las etapas del proceso electoral mexicano.</li>
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-arrow-right text-brand-400 mt-1"></i> Identificar autoridades electorales y sus funciones.</li>
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-arrow-right text-brand-400 mt-1"></i> Reconocer los medios de defensa en materia electoral.</li>
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-arrow-right text-brand-400 mt-1"></i> Participar en simulaciones respetando reglas democráticas.</li>
+                        <li class="flex items-start gap-3 text-slate-300"><i class="fa-solid fa-arrow-right text-brand-400 mt-1"></i> Elaborar una inconformidad básica (nivel preparatoria).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Competencias a Desarrollar -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 reveal">
+                <!-- Cívicas -->
+                <div class="bg-brand-50 p-8 rounded-2xl border border-brand-100">
+                    <h3 class="text-xl font-heading font-bold text-brand-900 mb-4 flex items-center gap-3"><i class="fa-solid fa-users text-brand-600"></i> Competencias Cívicas</h3>
+                    <p class="text-sm text-slate-600 mb-4 font-medium">El estudiante será capaz de:</p>
+                    <ul class="space-y-2 text-sm text-slate-700">
+                        <li>• Comprender los principios constitucionales de la democracia mexicana.</li>
+                        <li>• Identificar las instituciones que integran el sistema electoral.</li>
+                        <li>• Reconocer las etapas del proceso electoral.</li>
+                        <li>• Analizar la importancia del voto como derecho político fundamental.</li>
+                        <li>• Valorar el papel de la legalidad en la resolución de conflictos electorales.</li>
+                        <li>• Fortalecer la cultura democrática institucional.</li>
+                        <li>• Promover la participación ciudadana informada.</li>
+                        <li>• Desarrollar pensamiento crítico y argumentación básica.</li>
+                    </ul>
+                </div>
+                <!-- Analíticas -->
+                <div class="bg-brand-50 p-8 rounded-2xl border border-brand-100">
+                    <h3 class="text-xl font-heading font-bold text-brand-900 mb-4 flex items-center gap-3"><i class="fa-solid fa-brain text-brand-600"></i> Competencias Analíticas</h3>
+                    <p class="text-sm text-slate-600 mb-4 font-medium">El estudiante desarrollará:</p>
+                    <ul class="space-y-3 text-sm text-slate-700 font-bold">
+                        <li class="bg-white p-4 rounded-lg shadow-sm border border-slate-100">Pensamiento crítico</li>
+                        <li class="bg-white p-4 rounded-lg shadow-sm border border-slate-100">Capacidad de argumentación</li>
+                        <li class="bg-white p-4 rounded-lg shadow-sm border border-slate-100">Análisis institucional</li>
+                        <li class="bg-white p-4 rounded-lg shadow-sm border border-slate-100">Comprensión básica de normas jurídicas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- METODOLOGÍA Y CRONOGRAMA -->
+    <section id="metodologia" class="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <!-- Metodología y Evaluación -->
+                <div class="reveal" id="metodologia-text">
+                    <div class="flex items-center justify-between mb-6 border-b border-slate-700 pb-4">
+                        <h2 class="text-3xl font-heading font-bold text-white">Metodología y Evaluación</h2>
+                        <button type="button" onclick="readSection('metodologia-text', this)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none" title="Escuchar texto">
+                            <i class="fa-solid fa-volume-high tts-icon"></i>
+                        </button>
+                    </div>
+                    
+                    <h4 class="text-brand-400 font-bold tracking-widest text-sm uppercase mb-3">Metodología Didáctica</h4>
+                    <ul class="space-y-2 text-slate-300 mb-8 list-disc list-inside">
+                        <li>Aprendizaje teórico práctico.</li>
+                        <li>Simulación integral de proceso electoral escolar.</li>
+                        <li>Elaboración de mapas conceptuales.</li>
+                        <li>Resolución de caso práctico.</li>
+                    </ul>
+
+                    <h4 class="text-brand-400 font-bold tracking-widest text-sm uppercase mb-4">Estrategia de Evaluación</h4>
+                    
+                    <div class="bg-slate-800 p-5 rounded-lg mb-4 hover:border-brand-500 border border-transparent transition-colors">
+                        <h5 class="font-bold text-white mb-1"><i class="fa-solid fa-clipboard-question mr-2 text-brand-500"></i> Evaluación Diagnóstica</h5>
+                        <p class="text-sm text-slate-400">Cuestionario inicial.</p>
+                    </div>
+                    
+                    <div class="bg-slate-800 p-5 rounded-lg mb-4 hover:border-brand-500 border border-transparent transition-colors">
+                        <h5 class="font-bold text-white mb-2"><i class="fa-solid fa-spinner mr-2 text-brand-500"></i> Evaluación Formativa</h5>
+                        <p class="text-sm text-slate-400 mb-2">Observación continua y retroalimentación.</p>
+                        <p class="text-xs text-slate-300 font-bold mb-1">Indicadores de aprendizaje (Se evaluará si el alumno es capaz de):</p>
+                        <ul class="text-xs text-slate-400 list-disc list-inside space-y-1">
+                            <li>Explicar qué es la democracia.</li>
+                            <li>Identificar a las autoridades electorales.</li>
+                            <li>Describir las etapas del proceso electoral explicar la función de los partidos políticos.</li>
+                            <li>Comprender el funcionamiento básico del sistema de justicia electoral.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-lg hover:border-brand-500 border border-transparent transition-colors">
+                        <h5 class="font-bold text-white mb-3"><i class="fa-solid fa-flag-checkered mr-2 text-brand-500"></i> Evaluación Sumativa</h5>
+                        <div class="flex justify-between text-sm font-bold text-slate-300 mb-1 border-b border-slate-700 pb-1">
+                            <span>Participación</span><span class="text-brand-400">30%</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-bold text-slate-300 mb-1 border-b border-slate-700 pb-1">
+                            <span>Evaluación escrita</span><span class="text-brand-400">30%</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-bold text-white mb-3">
+                            <span>Proyecto final escolar simulada</span><span class="text-brand-400 text-lg">40%</span>
+                        </div>
+                        <p class="text-xs text-slate-300 font-bold mb-1">Indicadores:</p>
+                        <ul class="text-xs text-slate-400 list-disc list-inside">
+                            <li>Comprensión conceptual.</li>
+                            <li>Aplicación práctica de reglas.</li>
+                            <li>Argumentación básica.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Cronograma y Producto Final -->
+                <div class="reveal" id="cronograma-text">
+                    <div class="flex items-center justify-between mb-6 border-b border-slate-700 pb-4">
+                        <h2 class="text-3xl font-heading font-bold text-white">Cronograma de Implementación</h2>
+                        <button type="button" onclick="readSection('cronograma-text', this)" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none" title="Escuchar texto">
+                            <i class="fa-solid fa-volume-high tts-icon"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-3 mb-10">
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded w-20 text-center">Sesión 1</span>
+                            <span class="text-slate-300 text-sm font-medium">Democracia</span>
+                        </div>
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded w-20 text-center">Sesión 2</span>
+                            <span class="text-slate-300 text-sm font-medium">Principios</span>
+                        </div>
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded w-20 text-center">Sesión 3</span>
+                            <span class="text-slate-300 text-sm font-medium">División de poderes</span>
+                        </div>
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded w-20 text-center">Sesión 4</span>
+                            <span class="text-slate-300 text-sm font-medium">Autoridades electorales</span>
+                        </div>
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded w-20 text-center">Sesión 5</span>
+                            <span class="text-slate-300 text-sm font-medium">Proceso electoral</span>
+                        </div>
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded w-20 text-center">Sesión 6</span>
+                            <span class="text-slate-300 text-sm font-medium">Partidos Políticos y voto</span>
+                        </div>
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-slate-700 text-slate-300 text-xs font-bold px-3 py-1 rounded w-20 text-center">Sesión 7</span>
+                            <span class="text-slate-300 text-sm font-medium">Delitos Electorales</span>
+                        </div>
+                        <div class="flex gap-4 items-center bg-slate-800/50 p-3 rounded">
+                            <span class="bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded w-20 text-center shadow-lg">Sesión 8</span>
+                            <span class="text-brand-400 text-sm font-bold uppercase">Medios de Impugnación</span>
+                        </div>
+                    </div>
+
+                    <!-- Producto Final (Separado) -->
+                    <div class="bg-gradient-to-br from-brand-600 to-brand-900 p-8 rounded-2xl shadow-2xl relative overflow-hidden float-anim" id="producto-final-text">
+                        <button type="button" onclick="readSection('producto-final-text', this)" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors focus:outline-none z-10" title="Escuchar texto">
+                            <i class="fa-solid fa-volume-high tts-icon"></i>
+                        </button>
+                        <i class="fa-solid fa-box-open absolute -bottom-4 -right-4 text-8xl opacity-10"></i>
+                        <h3 class="text-2xl font-bold text-white mb-4">PRODUCTO FINAL</h3>
+                        <p class="text-brand-100 mb-4 font-medium">Simulación de elección escolar con:</p>
+                        <ul class="space-y-2 text-white font-bold relative z-10">
+                            <li><i class="fa-solid fa-check text-green-400 mr-2"></i> Registro de partidos</li>
+                            <li><i class="fa-solid fa-check text-green-400 mr-2"></i> Campañas</li>
+                            <li><i class="fa-solid fa-check text-green-400 mr-2"></i> Jornada electoral</li>
+                            <li><i class="fa-solid fa-check text-green-400 mr-2"></i> Impugnación simulada</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONCLUSIÓN GENERAL -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal" id="conclusion-text">
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <h2 class="text-3xl font-heading font-bold text-slate-900 border-b-4 border-brand-500 inline-block pb-2">Conclusión General</h2>
+                <button type="button" onclick="readSection('conclusion-text', this)" class="w-10 h-10 rounded-full bg-slate-200 text-brand-600 flex items-center justify-center hover:bg-slate-300 transition-colors focus:outline-none" title="Escuchar Conclusión">
+                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                </button>
+            </div>
+            
+            <div class="text-slate-600 space-y-5 text-justify md:text-center text-lg leading-relaxed">
+                <p>El presente programa académico se encuentra debidamente sustanciado desde una perspectiva constitucional, legal, pedagógica y social.</p>
+                <p>Desde el <strong>ámbito jurídico</strong>, su contenido se fundamenta expresamente en los artículos 40, 41, 99 y 116 de la Constitución Política de los Estados Unidos Mexicanos, así como en la legislación electoral secundaria aplicable. La incorporación sistemática de todas las etapas del proceso electoral – incluyendo precampañas, campañas, jornada electoral, cómputos y declaración de validez – permite ofrecer una visión integral del modelo electoral mexicano, garantizando coherencia normativa y rigor conceptual.</p>
+                <p>Desde el <strong>enfoque pedagógico</strong>, el programa combina teoría y práctica mediante simulaciones electorales, análisis de casos, ejercicios de argumentación básica y elaboración de escritos sencillos de inconformidad a nivel preparatoria y licenciatura, favoreciendo el aprendizaje significativo y el desarrollo de competencias cívicas y jurídicas iniciales.</p>
+                <p>En el <strong>plano social</strong>, el curso fortalece la cultura democrática, fomenta la legalidad, promueve la resolución institucional de conflictos y contribuye a formar ciudadanía informada, crítica y participativa. La comprensión de las reglas del proceso electoral y del sistema de medios de impugnación permiten que el estudiantado internalice la importancia del respeto a las instituciones y al Estado de Derecho.</p>
+                <div class="font-bold text-slate-800 bg-brand-50 p-6 rounded-lg border-l-4 border-brand-500 mt-8 text-left md:text-center shadow-sm">
+                    En consecuencia, la propuesta no solo cumple con criterios académicos y normativos, sino que responde a una necesidad formativa actual, consolidándose como un instrumento viable y pertinente para fortalecer la educación cívica en los niveles secundaria, medio superior y superior.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EL DOCENTE / CONTACTO -->
+    <section id="docente" class="py-24 bg-slate-50 relative border-t border-slate-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-100 reveal flex flex-col md:flex-row" id="docente-text">
+                <!-- Imagen de Perfil -->
+                <div class="md:w-2/5 h-80 md:h-auto relative">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Bulmaro García Arcos" class="absolute inset-0 w-full h-full object-cover object-center">
+                </div>
+                <!-- Información del Contacto -->
+                <div class="md:w-3/5 p-8 md:p-12 flex flex-col justify-center bg-slate-900 text-white relative">
+                    
+                    <button type="button" onclick="readSection('docente-text', this)" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none" title="Escuchar Perfil">
+                        <i class="fa-solid fa-volume-high tts-icon"></i>
+                    </button>
+
+                    <p class="text-brand-400 font-bold uppercase tracking-widest text-sm mb-2">El que suscribe y docente responsable:</p>
+                    <h2 class="text-3xl md:text-4xl font-heading font-extrabold mb-4">Bulmaro García Arcos</h2>
+                    <p class="text-slate-400 text-base mb-8 border-b border-slate-700 pb-6">Especialista en Formación Cívica, Ciencias Sociales y Derecho. Capacitador en proyectos académicos e institucionales enfocados al desarrollo de competencias cívicas.</p>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center gap-4 text-slate-300">
+                            <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-brand-400"><i class="fa-solid fa-envelope"></i></div>
+                            <span class="font-medium">contacto@eduelectoral.mx (Ejemplo)</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-slate-300">
+                            <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-brand-400"><i class="fa-solid fa-phone"></i></div>
+                            <span class="font-medium">+52 (55) 1234 5678 (Ejemplo)</span>
+                        </div>
+                    </div>
+
+                    <button class="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold transition-all shadow-lg text-center">
+                        Solicitar Implementación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-slate-500 py-8 text-center text-sm border-t border-slate-800">
+        <p>&copy; <span id="year"></span> Proyecto Académico en Materia Electoral - Bulmaro García Arcos. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- ==========================================
+         MODALES: SUB-MENÚS INTEGRADADOS 
+    =========================================== -->
+
+    <!-- Modal 1: PROGRAMA ACADÉMICO (VIII. CONTENIDO PROGRAMÁTICO) -->
+    <div id="modal-programa" class="modal fixed inset-0 w-full h-full flex items-center justify-center bg-slate-900/90 backdrop-blur-md">
+        <div class="modal-content relative bg-slate-50 w-full max-w-4xl mx-4 rounded-2xl shadow-2xl flex flex-col h-[90vh]">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-slate-200 bg-white rounded-t-2xl z-10 shrink-0">
+                <div>
+                    <h2 class="text-xs font-bold tracking-widest text-brand-600 uppercase mb-1">VIII. Contenido Programático</h2>
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-2xl font-heading font-bold text-slate-900">Temario Completo del Curso</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('modal-programa')" class="text-slate-400 hover:text-red-500 transition-colors bg-slate-100 hover:bg-red-50 p-2 rounded-lg focus:outline-none">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Acordeones con botones de lectura) -->
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50">
+                <div class="space-y-3">
+                    
+                    <!-- Módulo 1 -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" id="mod1-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-brand-600 font-bold text-lg w-8">M1</span>
+                                <span class="font-heading font-bold text-base text-slate-800">DEMOCRACIA</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <!-- Botón Sub-menú Lector -->
+                                <div onclick="event.stopPropagation(); readSection('mod1-text', this)" class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-200 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-50/50 px-6">
+                            <ul class="list-disc list-inside text-slate-600 pb-5 space-y-2 ml-12 text-sm mt-2">
+                                <li>La democracia a través de la historia (concepto y evolución)</li>
+                                <li>Democracia representativa en México</li>
+                                <li>Democracia instrumental vs. Democracia sustantiva</li>
+                                <li>Principios rectores de la función electoral</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Módulo 2 -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" id="mod2-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-brand-600 font-bold text-lg w-8">M2</span>
+                                <span class="font-heading font-bold text-base text-slate-800">PRINCIPIOS CONSTITUCIONALES</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div onclick="event.stopPropagation(); readSection('mod2-text', this)" class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-200 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-50/50 px-6">
+                            <div class="pb-5 ml-12 text-slate-600 text-sm mt-2">
+                                <p class="mb-3">Los principios constitucionales que rigen la materia electoral en México (Arts. 41 y 116 CPEUM) garantizan elecciones democráticas mediante los principios rectores de la autoridad electoral (INE/OPLEs):</p>
+                                <ul class="space-y-1 mb-4">
+                                    <li><strong>CERTEZA:</strong> Conocimiento claro de las normas para que los actores políticos sepan a qué atenerse.</li>
+                                    <li><strong>LEGALIDAD:</strong> Actuación apegada estrictamente a la Constitución y leyes vigentes.</li>
+                                    <li><strong>INDEPENDENCIA:</strong> Autonomía de las autoridades electorales frente a los poderes públicos y partidos políticos.</li>
+                                    <li><strong>IMPARCIALIDAD:</strong> Actuar sin favoritismos ni sesgos hacia ninguna fuerza política.</li>
+                                    <li><strong>OBJETIVIDAD:</strong> Reconocimiento objetivo de los hechos, sin prejuicios.</li>
+                                    <li><strong>MÁXIMA PUBLICIDAD:</strong> Trasparencia y acceso de los actos electorales.</li>
+                                    <li><strong>PARIDAD EN RAZÓN DE GENERO:</strong> Igualdad en la postulación entre hombres y mujeres.</li>
+                                </ul>
+                                <h4 class="font-bold text-slate-800 mb-1">PRINCIPIOS DEL SISTEMA ELECTORAL Y SUFRAGIO:</h4>
+                                <ul class="space-y-1 mb-2">
+                                    <li><strong>Elecciones Libres Auténticas y Periódicas:</strong> Renovación periódica de los poderes a través de la voluntad popular.</li>
+                                    <li><strong>Sufragio Universal, Libre, Secreto, Directo e Intransferible:</strong> Voto de todos los ciudadanos, sin coacción, confidencial y sin intermediarios.</li>
+                                    <li><strong>Equidad:</strong> Igualdad de condiciones en la contienda, financiamiento y acceso a medios.</li>
+                                    <li><strong>Paridad de Género:</strong> Garantía de postulación equilibrada entre hombres y mujeres.</li>
+                                    <li><strong>Definitividad:</strong> Las etapas del proceso electoral concluyen de manera firme, dando certeza a los resultados.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Módulo 3 -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" id="mod3-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-brand-600 font-bold text-lg w-8">M3</span>
+                                <span class="font-heading font-bold text-base text-slate-800">DIVISIÓN DE PODERES Y NIVELES DE GOBIERNO</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div onclick="event.stopPropagation(); readSection('mod3-text', this)" class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-200 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-50/50 px-6">
+                            <ul class="list-none text-slate-600 pb-5 space-y-1 ml-12 text-sm mt-2">
+                                <li><strong>3.1</strong> Poder Ejecutivo.</li>
+                                <li><strong>3.2</strong> Poder Legislativo.</li>
+                                <li><strong>3.3</strong> Poder Judicial.</li>
+                                <li><strong>3.4</strong> Ámbitos federal, estatal y municipal.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Módulo 4 -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" id="mod4-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-brand-600 font-bold text-lg w-8">M4</span>
+                                <span class="font-heading font-bold text-base text-slate-800">AUTORIDADES ELECTORALES</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div onclick="event.stopPropagation(); readSection('mod4-text', this)" class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-200 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-50/50 px-6">
+                            <div class="pb-5 ml-12 text-slate-600 text-sm mt-2">
+                                <p class="font-bold mb-1">4.1 Autoridad administrativa.</p>
+                                <ul class="list-disc list-inside ml-4 mb-2"><li>4.1.1 INE, OPLE</li></ul>
+                                <p class="font-bold mb-1">4.2 Autoridad jurisdiccional.</p>
+                                <ul class="list-disc list-inside ml-4">
+                                    <li>4.2.1 Tribunal Electoral del Poder Judicial de la Federación.</li>
+                                    <li>4.2.2 Salas regionales.</li>
+                                    <li>4.2.3 Sala Superior.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Módulo 5 -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" id="mod5-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-brand-600 font-bold text-lg w-8">M5</span>
+                                <span class="font-heading font-bold text-base text-slate-800">ETAPAS DEL PROCESO ELECTORAL</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div onclick="event.stopPropagation(); readSection('mod5-text', this)" class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-200 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-50/50 px-6">
+                            <div class="pb-5 ml-12 text-slate-600 text-sm mt-2">
+                                <p class="mb-2">El proceso electoral comprende de las siguientes etapas:</p>
+                                <ul class="list-none space-y-1">
+                                    <li><strong class="text-brand-700">5.1 PREPARACIÓN DE LA ELECCIÓN:</strong> 5.1.1 Precampañas. 5.1.1.2 Campañas.</li>
+                                    <li><strong class="text-brand-700">5.2 JORNADA ELECTORAL.</strong></li>
+                                    <li><strong class="text-brand-700">5.3 RESULTADOS Y DECLARACIÓN DE VALIDEZ.</strong></li>
+                                    <li><strong class="text-brand-700">5.4 DICTAMEN Y DECLARACIÓN DE VALIDEZ</strong> DE LA ELECCIÓN DE PRESIDENTE ELECTO DE LOS ESTADOS UNIDOS MEXICANOS.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Módulo 6 -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" id="mod6-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-brand-600 font-bold text-lg w-8">M6</span>
+                                <span class="font-heading font-bold text-base text-slate-800">PARTIDOS POLÍTICOS Y EL VOTO</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div onclick="event.stopPropagation(); readSection('mod6-text', this)" class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-200 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-50/50 px-6">
+                            <ul class="list-none text-slate-600 pb-5 space-y-1 ml-12 text-sm mt-2">
+                                <li><strong>6.1</strong> Naturaleza Jurídica.</li>
+                                <li><strong>6.2</strong> Funciones Constitucionales.</li>
+                                <li><strong>6.3</strong> Candidaturas Independientes.</li>
+                                <li><strong>6.4</strong> Características del voto.</li>
+                                <li><strong>6.5</strong> Quienes pueden votar.</li>
+                                <li><strong>6.6</strong> Quienes no tienen derecho a votar.</li>
+                                <li><strong>6.7</strong> Voto Extranjero.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Módulo 7 -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm" id="mod7-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-brand-600 font-bold text-lg w-8">M7</span>
+                                <span class="font-heading font-bold text-base text-slate-800">DELITOS ELECTORALES</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div onclick="event.stopPropagation(); readSection('mod7-text', this)" class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-200 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-50/50 px-6">
+                            <div class="pb-5 ml-12 text-slate-600 text-sm mt-2">
+                                <p class="font-bold text-slate-800 mb-1">AUTORIDAD ADMINISTRATIVA:</p>
+                                <ul class="list-none space-y-1">
+                                    <li><strong>7.1</strong> Descripción.</li>
+                                    <li><strong>7.2</strong> Quienes pueden cometer delitos electorales.</li>
+                                    <li><strong>7.3</strong> Sanciones.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Módulo 8 (Destacado) -->
+                    <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg" id="mod8-text">
+                        <button class="accordion-button w-full px-6 py-4 flex justify-between items-center focus:outline-none hover:bg-slate-700 transition-colors" onclick="toggleAccordion(this)">
+                            <div class="flex items-center gap-4 text-left">
+                                <span class="text-white font-bold text-lg w-8">M8</span>
+                                <span class="font-heading font-bold text-base text-brand-400">MEDIOS DE IMPUGNACIÓN (Especialización)</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div onclick="event.stopPropagation(); readSection('mod8-text', this)" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors focus:outline-none" title="Escuchar Módulo">
+                                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                                </div>
+                                <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content bg-slate-900 px-6">
+                            <ul class="list-none text-slate-300 pb-5 space-y-2 ml-12 text-sm border-l-2 border-brand-500 pl-4 mt-4">
+                                <li><strong>8.1</strong> Finalidad del sistema de justicia electoral.</li>
+                                <li><strong>8.2</strong> Juicio para la protección de derechos político-electorales (nivel preparatoria y licenciatura).</li>
+                                <li><strong>8.3</strong> Control de constitucionalidad en materia electoral.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-slate-200 bg-white rounded-b-2xl text-center shrink-0">
+                <button type="button" onclick="closeModal('modal-programa')" class="w-full sm:w-auto px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-bold transition-all shadow-md focus:outline-none">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: OPCIONES PREMIUM / A LA MEDIDA -->
+    <div id="modal-conocer" class="modal fixed inset-0 w-full h-full flex items-center justify-center bg-slate-900/90 backdrop-blur-md">
+        <div class="modal-content relative bg-slate-900 border border-slate-700 w-full max-w-5xl mx-4 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+            
+            <button type="button" onclick="closeModal('modal-conocer')" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-red-500 p-2 rounded-lg transition-colors z-20 focus:outline-none">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+
+            <div class="p-8 sm:p-12 overflow-y-auto dark-scrollbar flex-1 relative" id="opciones-text">
+                
+                <!-- Botón Lector General Opciones -->
+                <button type="button" onclick="readSection('opciones-text', this)" class="absolute top-8 right-16 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-none z-20" title="Escuchar Sección">
+                    <i class="fa-solid fa-volume-high tts-icon"></i>
+                </button>
+
+                <!-- Fondo Decorativo -->
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-brand-600 blur-[120px] opacity-20 rounded-full pointer-events-none"></div>
+
+                <div class="relative z-10 text-center mb-10 mt-4">
+                    <span class="inline-block py-1 px-3 rounded-full bg-brand-500/20 text-brand-400 text-xs font-bold tracking-widest uppercase mb-4 border border-brand-500/30">INVERSIÓN Y SERVICIOS</span>
+                    <h3 class="text-3xl sm:text-4xl font-heading font-bold text-white mb-4">Planes y Diseño a la Medida</h3>
+                    <p class="text-slate-400 text-lg max-w-3xl mx-auto">
+                        Entendemos que cada institución es única. No ofrecemos paquetes genéricos, sino que <strong>diseñamos y adaptamos la experiencia</strong> conforme a los requerimientos y el tamaño de la población estudiantil, garantizando un servicio de calidad premium.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                    <!-- Card 1 -->
+                    <div class="bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-brand-500 transition-colors flex flex-col">
+                        <div class="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center text-brand-400 text-xl mb-4 border border-slate-700"><i class="fa-solid fa-sliders"></i></div>
+                        <h4 class="text-xl font-bold mb-2 text-white">Flexibilidad Total</h4>
+                        <p class="text-slate-400 text-sm flex-1">Estructuramos las horas, las sesiones y la profundidad de los temas según su plan de estudios, garantizando total adaptación a nivel secundaria, preparatoria o licenciatura.</p>
+                    </div>
+                    
+                    <!-- Card 2 (Premium) -->
+                    <div class="bg-gradient-to-b from-brand-600 to-brand-900 border border-brand-400/50 rounded-2xl p-6 shadow-2xl relative text-white flex flex-col transform md:-translate-y-4">
+                        <div class="absolute top-0 right-0 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-3 py-1 rounded-bl-lg rounded-tr-xl tracking-wider">PREMIUM</div>
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center text-white text-xl mb-4"><i class="fa-solid fa-gavel"></i></div>
+                        <h4 class="text-xl font-bold mb-2">Simulación Avanzada</h4>
+                        <p class="text-brand-100 text-sm mb-4 flex-1">Incluye materiales premium para la simulación electoral escolar: urnas, papelería personalizada, casos de Medios de Impugnación y herramientas profesionales.</p>
+                        <button type="button" onclick="closeModal('modal-conocer'); document.getElementById('docente').scrollIntoView({behavior: 'smooth'});" class="w-full py-3 bg-white text-brand-900 text-center rounded-lg font-bold hover:bg-slate-100 transition-colors shadow-lg focus:outline-none">Agendar Cita</button>
+                    </div>
+                    
+                    <!-- Card 3 -->
+                    <div class="bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 hover:border-brand-500 transition-colors flex flex-col">
+                        <div class="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center text-brand-400 text-xl mb-4 border border-slate-700"><i class="fa-solid fa-chalkboard-user"></i></div>
+                        <h4 class="text-xl font-bold mb-2 text-white">Acompañamiento Escolar</h4>
+                        <p class="text-slate-400 text-sm flex-1">Soporte continuo e integral por parte del docente responsable para garantizar el éxito de la simulación electoral y la evaluación sumativa.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Navbar Scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 20) nav.classList.add('shadow-md');
+            else nav.classList.remove('shadow-md');
+        });
+
+        // Menú Móvil
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+        mobileLinks.forEach(link => link.addEventListener('click', () => menu.classList.add('hidden')));
+
+        // Acordeón (Dentro del Modal)
+        function toggleAccordion(button) {
+            const content = button.nextElementSibling;
+            
+            button.classList.toggle('active');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                content.style.paddingTop = "0";
+                content.style.paddingBottom = "0";
+            } else {
+                content.style.maxHeight = content.scrollHeight + 40 + "px"; 
+                content.style.paddingTop = "0.5rem"; 
+            }
+        }
+
+        // Animaciones Reveal al hacer Scroll
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 50) reveals[i].classList.add("active");
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Inicial
+
+        // Modales Logic
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('active');
+            document.body.classList.add('modal-open');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.classList.remove('modal-open');
+            // Detener lectura al cerrar modal
+            if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                resetCurrentTTS();
+            }
+        }
+        
+        // Cerrar al clickear fuera del contenido del modal
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+                document.body.classList.remove('modal-open');
+                if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                    resetCurrentTTS();
+                }
+            }
+        }
+
+        // Estadísticas animadas
+        const counters = document.querySelectorAll('.counter');
+        let hasCounted = false;
+        function animateCounters() {
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 2000; // ms
+                const increment = target / (duration / 16); 
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.innerText = Math.ceil(current);
+                        requestAnimationFrame(updateCounter);
+                    } else counter.innerText = target;
+                };
+                updateCounter();
+            });
+        }
+        const statsSection = document.querySelector('.counter')?.closest('section');
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !hasCounted) {
+                animateCounters();
+                hasCounted = true;
+            }
+        }, { threshold: 0.5 });
+        if(statsSection) observer.observe(statsSection);
+
+        // ==========================================
+        // TEXT-TO-SPEECH LÓGICA (LECTOR EN VOZ ALTA)
+        // ==========================================
+        let currentTTSBtn = null;
+
+        function resetCurrentTTS() {
+            if (currentTTSBtn) {
+                const icon = currentTTSBtn.querySelector('.tts-icon');
+                if (icon) {
+                    icon.classList.remove('fa-circle-stop', 'text-red-500');
+                    icon.classList.add('fa-volume-high');
+                }
+                currentTTSBtn = null;
+            }
+        }
+
+        function readSection(elementId, btnElement) {
+            if (!('speechSynthesis' in window)) {
+                alert("Tu navegador no soporta el lector de voz en este momento.");
+                return;
+            }
+
+            // Si se hace clic en el MISMO botón que está reproduciendo, detener y salir.
+            if (window.speechSynthesis.speaking && currentTTSBtn === btnElement) {
+                window.speechSynthesis.cancel();
+                resetCurrentTTS();
+                return;
+            }
+
+            // Si hay otra lectura en curso, detenerla antes de iniciar una nueva.
+            window.speechSynthesis.cancel();
+            resetCurrentTTS();
+
+            const elementToRead = document.getElementById(elementId);
+            if (!elementToRead) return;
+
+            // Extraer el texto limpiando espacios extra (textContent lee también texto oculto como en los acordeones).
+            // Quitamos la palabra "PREMIUM" u otros tags irrelevantes si queremos, pero limpiarlo sirve.
+            let textToRead = elementToRead.textContent.replace(/\s+/g, ' ').trim();
+            
+            // Si el texto está vacío, no hace nada
+            if (!textToRead) return;
+
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.lang = 'es-MX'; // Español de México
+            utterance.rate = 1.0;     // Velocidad normal
+
+            // Cambiar ícono a "Stop" (Detener) en el botón actual
+            currentTTSBtn = btnElement;
+            const icon = currentTTSBtn.querySelector('.tts-icon');
+            if (icon) {
+                icon.classList.remove('fa-volume-high');
+                icon.classList.add('fa-circle-stop', 'text-red-500');
+            }
+
+            // Eventos para restaurar el ícono cuando termine de hablar o haya error
+            utterance.onend = () => resetCurrentTTS();
+            utterance.onerror = () => resetCurrentTTS();
+
+            // Iniciar lectura
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Detener lectura al cerrar la pestaña o recargar
+        window.addEventListener('beforeunload', () => {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        });
+    </script>
+</body>
+</html>
