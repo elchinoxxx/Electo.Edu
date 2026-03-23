@@ -905,38 +905,94 @@
 
     <script type="text/javascript">
         function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'es', includedLanguages: 'en,es', autoDisplay: false}, 'google_translate_element');
+            new google.translate.TranslateElement({
+                pageLanguage: 'auto', 
+                includedLanguages: 'en,es', 
+                autoDisplay: false
+            }, 'google_translate_element');
         }
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
-        // Lógica de traducción personalizada sin recargar la página obligatoriamente
+        // Funciones de idioma sin recargar página
+        function getCookie(name) {
+            let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+
         function toggleLanguage() {
             var select = document.querySelector('.goog-te-combo');
             if (!select) {
-                alert('El traductor de Google se está cargando. Intenta de nuevo en un segundo.');
+                alert('El traductor se está cargando. Intenta de nuevo en un segundo.');
                 return;
             }
-            
-            var isEnglish = select.value === 'en';
-            
+
+            var currentLang = getCookie('googtrans');
+            // Verificamos si estamos actualmente en inglés
+            var isEnglish = (currentLang === '/es/en' || currentLang === '/auto/en' || document.documentElement.lang === 'en' || select.value === 'en');
+
             if (isEnglish) {
-                // Regresar a español (idioma original) limpiando el selector
-                select.value = '';
-                select.dispatchEvent(new Event('change'));
+                // PASAR A ESPAÑOL (ORIGINAL)
+                
+                // 1. Borrar la cookie para asegurar que el estado se limpia
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname;
+                
+                // 2. Intentar hacer click directo en el botón "Mostrar original" del iframe oculto de Google (ESTO EVITA RECARGAR)
+                var iframe = document.querySelector('.goog-te-banner-frame');
+                var restored = false;
+                if (iframe) {
+                    try {
+                        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        var btns = innerDoc.getElementsByTagName('button');
+                        for (var i = 0; i < btns.length; i++) {
+                            if (btns[i].id.includes('restore')) {
+                                btns[i].click();
+                                restored = true;
+                                break;
+                            }
+                        }
+                    } catch(e) { console.log("CORS bloqueó acceso al iframe (Normal en PC local)."); }
+                }
+
+                // 3. Fallback: Cambiar el select a índice 0 y disparar evento estándar
+                if (!restored) {
+                    select.selectedIndex = 0;
+                    var evt = document.createEvent("HTMLEvents");
+                    evt.initEvent("change", true, true);
+                    select.dispatchEvent(evt);
+                }
+
+                // Actualizar iconos y textos (Dice "EN" porque al estar en español, el botón debe invitar a cambiar a inglés)
                 document.getElementById('lang-text-desktop').textContent = 'EN';
                 document.getElementById('lang-text-mobile').textContent = 'EN';
+                document.documentElement.lang = 'es';
+
             } else {
-                // Cambiar a inglés
+                // PASAR A INGLÉS
                 select.value = 'en';
-                select.dispatchEvent(new Event('change'));
+                var evt = document.createEvent("HTMLEvents");
+                evt.initEvent("change", true, true);
+                select.dispatchEvent(evt);
+
+                // Actualizar iconos y textos
                 document.getElementById('lang-text-desktop').textContent = 'ES';
                 document.getElementById('lang-text-mobile').textContent = 'ES';
+                document.documentElement.lang = 'en';
             }
         }
 
-        document.getElementById('year').textContent = new Date().getFullYear();
+        // Configurar UI inicial basado en cookies
+        window.addEventListener('DOMContentLoaded', () => {
+            var currentLang = getCookie('googtrans');
+            var isEnglish = (currentLang === '/es/en' || currentLang === '/auto/en');
+            if (isEnglish) {
+                document.getElementById('lang-text-desktop').textContent = 'ES';
+                document.getElementById('lang-text-mobile').textContent = 'ES';
+            }
+            document.getElementById('year').textContent = new Date().getFullYear();
+        });
 
         // Navbar Scroll
         window.addEventListener('scroll', () => {
